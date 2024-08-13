@@ -17,7 +17,7 @@ public class GridData
 
             if (positionToOccupy.Any(pos => data.ContainsKey(pos)))
             {
-                throw new Exception("Cell is already occupied");
+                Debug.LogWarning("Cell is already occupied");
             }
 
             foreach (var pos in positionToOccupy)
@@ -47,6 +47,21 @@ public class GridData
     public bool IsCellOccupied(Vector3Int position)
     {
         return data.ContainsKey(position);
+    }
+    
+    public bool IsCellOccupied(Vector3Int position,Vector2Int size)
+    {
+        for (var x = 0; x < size.x; x++)
+        {
+            for (var y = 0; y < size.y; y++)
+            {
+                if (data.ContainsKey(position + new Vector3Int(x, 0, y)))
+                {
+                    return true;
+                }
+            }
+        }
+        return false; 
     }
 
     public PlacementData GetPlacementData(Vector3Int position)

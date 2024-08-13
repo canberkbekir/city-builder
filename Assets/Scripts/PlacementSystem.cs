@@ -1,15 +1,24 @@
 
+using System.Linq;
 using UnityEngine;
 
 public class PlacementSystem : MonoBehaviour
 {
+    [Header("Settings")]
+    [SerializeField] private bool isEnable = true;
+    [SerializeField] private Color previewColor = Color.white;
+    [SerializeField] private Color occupiedColor = Color.red;
+    
     [Header("References")]
     [SerializeField] private InputManager inputManager;
     [SerializeField] private GameObject mouseIndicatorPrefab;
     [SerializeField] private GameObject cellIndicatorPrefab;
     [SerializeField] private Grid grid;
     [SerializeField] private PlaceableObjectDatabaseSO placeableObjectDatabase;
-
+    [Header("Debug")]
+    [SerializeField] private PlaceableObject currentPlaceableObject; 
+    
+    //private
     private GridData gridData;
     private Renderer previewCellIndicatorRenderer;
     private GameObject mouseIndicator;
@@ -29,6 +38,7 @@ public class PlacementSystem : MonoBehaviour
     {
         gridData = new GridData();
         previewCellIndicatorRenderer = cellIndicator.GetComponentInChildren<Renderer>();
+        currentPlaceableObject = placeableObjectDatabase.placeableObjects.FirstOrDefault(x=>x.Id == 1);
     }
 
     private void Update()
@@ -46,6 +56,8 @@ public class PlacementSystem : MonoBehaviour
             DisableIndicators();
         }
     }
+
+    #region Indicators
 
     private void InitializeIndicators()
     {
@@ -73,13 +85,13 @@ public class PlacementSystem : MonoBehaviour
         mouseIndicator.transform.position = mousePosition;
         cellIndicator.transform.position = grid.CellToWorld(gridPosition);
         
-        if(IsCellOccupied(gridPosition))
+        if(IsCellOccupied(gridPosition,currentPlaceableObject.Size))
         {
-            previewCellIndicatorRenderer.material.color = Color.red;
+            previewCellIndicatorRenderer.material.color = occupiedColor;
         }
         else
         {
-            previewCellIndicatorRenderer.material.color = Color.white;
+            previewCellIndicatorRenderer.material.color = previewColor;
         }
     }
 
@@ -96,22 +108,25 @@ public class PlacementSystem : MonoBehaviour
         }
     }
 
+    #endregion
+   
+
     private void PlaceObject()
     {
-        Vector3 mousePosition = inputManager.GetMousePositionOnLayer();
-        Vector3Int gridPosition = grid.WorldToCell(mousePosition);
+        var mousePosition = inputManager.GetMousePositionOnLayer();
+        var gridPosition = grid.WorldToCell(mousePosition);
 
-        if (IsCellOccupied(gridPosition))
+        if (IsCellOccupied(gridPosition, currentPlaceableObject.Size))
         {
             Debug.LogWarning("Cell is already occupied");
             return;
         }
 
-        PlaceableObject placeableObject = GetPlaceableObject();
-        if (placeableObject != null)
+       
+        if (currentPlaceableObject != null)
         {
-            var newObject = InstantiatePlaceableObject(placeableObject, gridPosition);
-            AddPlaceableDataToGridData(gridPosition, placeableObject);
+            var newObject = InstantiatePlaceableObject(currentPlaceableObject, gridPosition);
+            AddPlaceableDataToGridData(gridPosition, currentPlaceableObject);
         }
         else
         {
@@ -119,21 +134,13 @@ public class PlacementSystem : MonoBehaviour
         }
     }
 
-    private PlaceableObject GetPlaceableObject()
-    {
-        // This method can be extended to choose different objects based on user input or game logic
-        if (placeableObjectDatabase && placeableObjectDatabase.placeableObjects.Count > 0)
-        {
-            return placeableObjectDatabase.placeableObjects[0];
-        }
+    
 
-        return null;
-    }
-
-    private bool IsCellOccupied(Vector3Int gridPosition)
+    private bool IsCellOccupied(Vector3Int gridPosition, Vector2Int size)
     {
-        return gridData.IsCellOccupied(gridPosition);
+        return gridData.IsCellOccupied(gridPosition, size);
     }
+     
 
     private GameObject InstantiatePlaceableObject(PlaceableObject placeableObject, Vector3Int gridPosition)
     {

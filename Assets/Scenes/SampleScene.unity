@@ -1075,11 +1075,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e243558c269254cdf8d5a8fc7100a515, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isEnable: 1
+  previewColor: {r: 1, g: 1, b: 1, a: 1}
+  occupiedColor: {r: 1, g: 0, b: 0, a: 1}
   inputManager: {fileID: 0}
   mouseIndicatorPrefab: {fileID: 234001797667388715, guid: 2f01995b81acb4ec2870e2cf4acaa165, type: 3}
   cellIndicatorPrefab: {fileID: 5050257811063177929, guid: 2c4482dff6b20437f9afead1d96b3e40, type: 3}
   grid: {fileID: 1945591304}
   placeableObjectDatabase: {fileID: 11400000, guid: dc644588f43ab466d9d262fe013fc85e, type: 2}
+  currentPlaceableObject:
+    <Id>k__BackingField: 1
+    <Name>k__BackingField: 
+    <Prefab>k__BackingField: {fileID: 0}
+    <Icon>k__BackingField: {fileID: 0}
+    <Size>k__BackingField: {x: 0, y: 0}
 --- !u!1 &1747154381
 GameObject:
   m_ObjectHideFlags: 0
